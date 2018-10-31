@@ -30,39 +30,74 @@ namespace RubioSteven_Assignment2.Controllers
                         Active = true,
                         AdditionalValue = "He's alright, I guess."
                     });
+                _context.SaveChanges();
             }
         }
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<IEnumerable<Student>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return _context.StudentItems.ToList();
         }
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Student> Get(int id)
         {
-            return "value";
+            var item = _context.StudentItems.Find(id);
+            if(item == null)
+            {
+                return NotFound();
+            }
+            return item;
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult<Student> Post([FromBody] Student item)
         {
+            _context.StudentItems.Add(item);
+            _context.SaveChanges();
+            return item;
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public ActionResult Put(int id, [FromBody] Student item)
         {
+            var currentItem = _context.StudentItems.Find(id);
+            if (currentItem == null)
+            {
+                return NotFound();
+            }
+
+            currentItem.LastName = item.LastName;
+            currentItem.FirstName = item.FirstName;
+            currentItem.GPA = item.GPA;
+            currentItem.GraduationDate = item.GraduationDate;
+            currentItem.Active = item.Active;
+            currentItem.AdditionalValue = item.AdditionalValue;
+
+            _context.StudentItems.Update(currentItem);
+            _context.SaveChanges();
+
+            return NoContent();
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
+            var currentItem = _context.StudentItems.Find(id);
+            if (currentItem == null)
+            {
+                return NotFound();
+            }
+
+            _context.StudentItems.Remove(currentItem);
+            _context.SaveChanges();
+            return NoContent();
         }
     }
 }
